@@ -136,6 +136,7 @@ while welcome == True:
     else:
         print('\n' * 30)
         print("Invalid entry. Please enter 'B', 'D', or 'W'")
+        continue
 
     ###################################
     # ask to make another transaction
