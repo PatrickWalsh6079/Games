@@ -1,0 +1,1117 @@
+'''
+BLACK JACK
+
+This game is made for one human player and one computer player. It is a simple, text-based
+version of Black Jack. There is a deck of 52 cards. Number cards are worth their numeric value,
+jacks, kings, and queens are worth 10 points, and aces are worth 1 or 11. The player goes 
+first. The player chooses either to 'hit' or 'stand'. Once the player is happy with their hand
+and chooses 'stand', the turn goes to the computer dealer. The computer will then 'hit' until the 
+computer has a sum of 17 or higher without exceeding 21, or the computer will lose by going over 
+21 and busting. Player with the highest sum without going over 21 wins. If there is a tie, it is
+called 'Push' and no money is exchanged that round.
+
+The requirements are as follows:
+
+The player can choose to 'stand' or 'hit'.
+The deck will be represented using OOP.
+The player gets to pick their betting amount.
+The game must keep track of the player's total money.
+The game must alert the player of a win or loss.
+The game must incorporate Object Oriented Programming.
+
+
+Object of the game:
+Beat the dealer (computer player), either by getting 21 on their first two cards;
+reach a final score higher than the dealer without exceeding 21; or
+play until the dealer busts.
+
+
+'''
+
+
+
+
+
+#########
+# suits
+########
+
+# spade
+spade = u'\u2660 '
+# heart
+heart = u'\u2665 '
+# diamond
+diamond = u'\u2666 '
+# club
+club = u'\u2663 '
+
+
+# deck used to print cards
+deck = ['A '+club,'2 '+club,'3 '+club,'4 '+club,'5 '+club,'6 '+club,'7 '+club,'8 '+club,'9 '+club,
+        '10'+club,'J '+club,'Q '+club,'K '+club,
+        'A '+spade,'2 '+spade,'3 '+spade,'4 '+spade,'5 '+spade,'6 '+spade,'7 '+spade,'8 '+spade,
+        '9 '+spade,'10'+spade,'J '+spade,'Q '+spade,'K '+spade,
+        'A '+heart,'2 '+heart,'3 '+heart,'4 '+heart,'5 '+heart,'6 '+heart,'7 '+heart,'8 '+heart,
+        '9 '+heart,'10'+heart,'J '+heart,'Q '+heart,'K '+heart,
+        'A '+diamond,'2 '+diamond,'3 '+diamond,'4 '+diamond,'5 '+diamond,'6 '+diamond,'7 '+diamond,
+        '8 '+diamond,'9 '+diamond,'10'+diamond,'J '+diamond,'Q '+diamond,'K '+diamond]
+
+
+
+
+# random module for shuffling deck
+import random
+
+
+
+
+
+
+
+# welcome screen
+print('\n'*40)
+print('\t\t    #######################')
+print('\t\t    #######################')
+print('\n')
+print('\t\t     WELCOME TO BLACK JACK')
+print('\n')
+print('\t\t    #######################')
+print('\t\t    #######################')
+print('\n'*3)
+
+suit1 = deck[0][2:5]
+rank1 = deck[0][:2]
+suit2 = deck[13][2:5]
+rank2 = deck[13][:2]
+suit3 = deck[26][2:5]
+rank3 = deck[26][:2]
+suit4 = deck[39][2:5]
+rank4 = deck[39][:2]
+hand_welcome = ['-------------','    ','-------------','    ','-------------','    ','-------------',
+    '\n|',' {}        '.format(rank1),'|','    ','|',' {}        '.format(rank2),'|','    ','|',
+             ' {}        '.format(rank3),'|','    ','|',' {}        '.format(rank4),'|',
+    '\n|','           ','|','    ','|','           ','|','    ','|','           ',
+             '|','    ','|','           ','|',
+    '\n|','     {}    '.format(suit1),'|','    ','|','     {}    '.format(suit2),'|','    ','|',
+             '     {}    '.format(suit3),'|','    ','|','     {}    '.format(suit4),'|',
+    '\n|','           ','|','    ','|','           ','|','    ','|','           ',
+             '|','    ','|','           ','|',
+    '\n|','        {} '.format(rank1),'|','    ','|','        {} '.format(rank2),'|','    ','|',
+             '        {} '.format(rank3),'|','    ','|','        {} '.format(rank4),'|',
+    '\n-------------','    ','-------------','    ','-------------','    ','-------------']
+print(''.join(hand_welcome))
+print('\n\n\n')
+
+
+
+
+
+
+
+# class has player attributes of name, amount of money in hand, and wager amount
+class Player():
+    
+    # attributes are name, money in hand, and wager
+    def __init__(self,name,in_hand,wager):
+        self.name = name
+        self.in_hand = in_hand
+        self.wager = wager
+
+# values will be decided by player
+human_player = Player('',0,0)
+
+
+
+while True:
+    
+    # ask for name
+    player_name = input("Who is playing today?\n\nPlease enter the player's name: ")
+    human_player.name = player_name
+    print('\n' * 40)
+    print('Welcome, '+human_player.name+'!')
+    print('\n\n')
+    break
+
+# set to False until name and starting money amount are confirmed
+ready_to_play = False
+    
+while not ready_to_play:
+    
+    # ask for how much money they have
+    try:
+        money_in_hand = int(input("How much are you bringing to the tables today?\n\nPlease enter a dollar amount using integers: "))
+    except ValueError:
+        print('\n' * 40)
+        print('That value is invalid! Please enter an integer\n\n')
+        continue
+    else:
+        human_player.in_hand = money_in_hand
+        print('\n' * 40)
+    
+    # ask if inputs correct
+    while True:
+        print("Player: "+human_player.name+"\t\tMoney in hand: $",human_player.in_hand)
+        print('\n\n')
+        start_game = input("Is this correct? Please enter Yes 'y' or No 'n': ")
+        print('\n' * 40)
+        if start_game == 'y'.lower():
+            ready_to_play = True
+            break
+        elif start_game == 'n'.lower():
+            print('\n' * 40)
+            break
+        else:
+            print('\n' * 40)
+            print("That input is invalid! Please enter Yes 'y' or No 'n'")
+            print('\n\n')
+            continue
+
+
+# used for time delays
+import time
+time_elapse = random.randint(2,4) 
+
+
+##############
+# game begins
+##############
+game_running = True
+
+while game_running == True:
+    
+    # shuffle the deck
+    random.shuffle(deck)
+    
+    # the number of cards starting in hand
+    no_cards = 2
+    
+    ##########################
+    # dealer's possible hands
+    ##########################
+    suit1 = deck[0][2:5]
+    rank1 = deck[0][:2]
+    dealer_hand = ['-------------','    ','-------------',
+    '\n|',' {}        '.format(rank1),'|','    ','|',' {}        '.format('  '),'|',
+    '\n|','           ','|','    ','|','           ','|',
+    '\n|','     {}    '.format(suit1),'|','    ','|','     {}    '.format('  '),'|',
+    '\n|','           ','|','    ','|','           ','|',
+    '\n|','        {} '.format(rank1),'|','    ','|','        {} '.format('  '),'|',
+    '\n-------------','    ','-------------']
+
+
+
+    suit2 = deck[1][2:5]
+    rank2 = deck[1][:2]
+    dealer_hand_revealed = ['-------------','    ','-------------',
+    '\n|',' {}        '.format(rank1),'|','    ','|',' {}        '.format(rank2),'|',
+    '\n|','           ','|','    ','|','           ','|',
+    '\n|','     {}    '.format(suit1),'|','    ','|','     {}    '.format(suit2),'|',
+    '\n|','           ','|','    ','|','           ','|',
+    '\n|','        {} '.format(rank1),'|','    ','|','        {} '.format(rank2),'|',
+    '\n-------------','    ','-------------']
+
+
+
+    suit_dealer3 = deck[no_cards+2][2:5]
+    rank_dealer3 = deck[no_cards+2][:2]
+    dealer_hand3 = ['-------------','    ','-------------','    ','-------------',
+    '\n|',' {}        '.format(rank1),'|','    ','|',' {}        '.format(rank2),'|'
+             ,'    ','|',' {}        '.format(rank_dealer3),'|',
+    '\n|','           ','|','    ','|','           ','|','    ','|','           ','|',
+    '\n|','     {}    '.format(suit1),'|','    ','|','     {}    '.format(suit2),'|'
+             ,'    ','|','     {}    '.format(suit_dealer3),'|',
+    '\n|','           ','|','    ','|','           ','|','    ','|','           ','|',
+    '\n|','        {} '.format(rank1),'|','    ','|','        {} '.format(rank2),'|'
+             ,'    ','|','        {} '.format(rank_dealer3),'|',
+    '\n-------------','    ','-------------','    ','-------------']
+
+
+    suit_dealer4 = deck[no_cards+3][2:5]
+    rank_dealer4 = deck[no_cards+3][:2]
+    dealer_hand4 = ['-------------','    ','-------------','    ','-------------','    ','-------------',
+    '\n|',' {}        '.format(rank1),'|','    ','|',' {}        '.format(rank2),'|','    ','|',
+             ' {}        '.format(rank_dealer3),'|','    ','|',' {}        '.format(rank_dealer4),'|',
+    '\n|','           ','|','    ','|','           ','|','    ','|','           ',
+             '|','    ','|','           ','|',
+    '\n|','     {}    '.format(suit1),'|','    ','|','     {}    '.format(suit2),'|','    ','|',
+             '     {}    '.format(suit_dealer3),'|','    ','|','     {}    '.format(suit_dealer4),'|',
+    '\n|','           ','|','    ','|','           ','|','    ','|','           ',
+             '|','    ','|','           ','|',
+    '\n|','        {} '.format(rank1),'|','    ','|','        {} '.format(rank2),'|','    ','|',
+             '        {} '.format(rank_dealer3),'|','    ','|','        {} '.format(rank_dealer4),'|',
+    '\n-------------','    ','-------------','    ','-------------','    ','-------------']
+
+
+    suit_dealer5 = deck[no_cards+4][2:5]
+    rank_dealer5 = deck[no_cards+4][:2]
+    dealer_hand5 = ['-------------','    ','-------------','    ','-------------','    ',
+             '-------------','    ','-------------',
+    '\n|',' {}        '.format(rank1),'|','    ','|',' {}        '.format(rank2),'|','    ','|',
+             ' {}        '.format(rank_dealer3),'|','    ','|',' {}        '.format(rank_dealer4),'|',
+             '    ','|',' {}        '.format(rank_dealer5),'|',
+    '\n|','           ','|','    ','|','           ','|','    ','|','           ','|','    ',
+             '|','           ','|','    ','|','           ','|',
+    '\n|','     {}    '.format(suit1),'|','    ','|','     {}    '.format(suit2),'|','    ','|',
+             '     {}    '.format(suit_dealer3),'|','    ','|','     {}    '.format(suit_dealer4),'|',
+             '    ','|','     {}    '.format(suit_dealer5),'|',
+    '\n|','           ','|','    ','|','           ','|','    ','|','           ','|','    ',
+             '|','           ','|','    ','|','           ','|',
+    '\n|','        {} '.format(rank1),'|','    ','|','        {} '.format(rank2),'|','    ','|',
+             '        {} '.format(rank_dealer3),'|','    ','|','        {} '.format(rank_dealer4),'|',
+             '    ','|','        {} '.format(rank_dealer5),'|',
+    '\n-------------','    ','-------------','    ','-------------','    ',
+             '-------------','    ','-------------']
+
+    suit_dealer6 = deck[no_cards+5][2:5]
+    rank_dealer6 = deck[no_cards+5][:2]
+    dealer_hand6 = ['-------------','    ','-------------','    ','-------------','    ',
+             '-------------','    ','-------------','    ','-------------',
+    '\n|',' {}        '.format(rank1),'|','    ','|',' {}        '.format(rank2),'|','    ',
+             '|',' {}        '.format(rank_dealer3),'|','    ','|',' {}        '.format(rank_dealer4),'|',
+             '    ','|',' {}        '.format(rank_dealer5),'|','    ','|',' {}        '.format(rank_dealer6),'|',
+    '\n|','           ','|','    ','|','           ','|','    ','|','           ','|','    ','|',
+             '           ','|','    ','|','           ','|','    ','|','           ','|',
+    '\n|','     {}    '.format(suit1),'|','    ','|','     {}    '.format(suit2),'|','    ','|',
+             '     {}    '.format(suit_dealer3),'|','    ','|','     {}    '.format(suit_dealer4),'|','    ','|',
+             '     {}    '.format(suit_dealer5),'|','    ','|','     {}    '.format(suit_dealer6),'|',
+    '\n|','           ','|','    ','|','           ','|','    ','|','           ','|','    ','|',
+             '           ','|','    ','|','           ','|','    ','|','           ','|',
+    '\n|','        {} '.format(rank1),'|','    ','|','        {} '.format(rank2),'|','    ','|',
+             '        {} '.format(rank_dealer3),'|','    ','|','        {} '.format(rank_dealer4),'|','    ','|',
+             '        {} '.format(rank_dealer5),'|','    ','|','        {} '.format(rank_dealer6),'|',
+    '\n-------------','    ','-------------','    ','-------------','    ','-------------',
+             '    ','-------------','    ','-------------']
+
+
+    suit_dealer7 = deck[no_cards+6][2:5]
+    rank_dealer7 = deck[no_cards+6][:2]
+    dealer_hand7 = ['-------------','    ','-------------','    ','-------------','    ','-------------',
+             '    ','-------------','    ','-------------',
+    '\n|',' {}        '.format(rank1),'|','    ','|',' {}        '.format(rank2),'|','    ','|',
+             ' {}        '.format(rank_dealer3),'|','    ','|',' {}        '.format(rank_dealer4),'|','    ','|',
+             ' {}        '.format(rank_dealer5),'|','    ','|',' {}        '.format(rank_dealer6),'|',
+    '\n|','           ','|','    ','|','           ','|','    ','|','           ','|','    ','|',
+             '           ','|','    ','|','           ','|','    ','|','           ','|',
+    '\n|','     {}    '.format(suit1),'|','    ','|','     {}    '.format(suit2),'|','    ','|',
+             '     {}    '.format(suit_dealer3),'|','    ','|','     {}    '.format(suit_dealer4),'|','    ','|',
+             '     {}    '.format(suit_dealer5),'|','    ','|','     {}    '.format(suit_dealer6),'|',
+    '\n|','           ','|','    ','|','           ','|','    ','|','           ','|','    ','|',
+             '           ','|','    ','|','           ','|','    ','|','           ','|',
+    '\n|','        {} '.format(rank1),'|','    ','|','        {} '.format(rank2),'|','    ','|',
+             '        {} '.format(rank_dealer3),'|','    ','|','        {} '.format(rank_dealer4),'|','    ','|',
+             '        {} '.format(rank_dealer5),'|','    ','|','        {} '.format(rank_dealer6),'|',
+    '\n-------------','    ','-------------','    ','-------------','    ','-------------','    ',
+             '-------------','    ','-------------',
+             '\n','-------------',
+             '\n','|',' {}        '.format(rank_dealer7),'|',
+            '\n','|',
+             '           ','|','\n','|',
+             '     {}    '.format(suit_dealer7),'|','\n','|',
+             '           ','|','\n','|',
+             '        {} '.format(rank_dealer7),'|','\n','-------------',]
+
+
+
+    ##########################
+    # player's possible hands
+    ##########################
+    suit3 = deck[2][2:5]
+    rank3 = deck[2][:2]
+    suit4 = deck[3][2:5]
+    rank4 = deck[3][:2]
+    hand2 = ['-------------','    ','-------------',
+    '\n|',' {}        '.format(rank3),'|','    ','|',' {}        '.format(rank4),'|',
+    '\n|','           ','|','    ','|','           ','|',
+    '\n|','     {}    '.format(suit3),'|','    ','|','     {}    '.format(suit4),'|',
+    '\n|','           ','|','    ','|','           ','|',
+    '\n|','        {} '.format(rank3),'|','    ','|','        {} '.format(rank4),'|',
+    '\n-------------','    ','-------------']
+    #print(''.join(hand2))
+
+
+    #print('\n')
+    #print('\n')
+
+
+
+    suit5 = deck[4][2:5]
+    rank5 = deck[4][:2]
+    hand3 = ['-------------','    ','-------------','    ','-------------',
+    '\n|',' {}        '.format(rank3),'|','    ','|',' {}        '.format(rank4),'|'
+             ,'    ','|',' {}        '.format(rank5),'|',
+    '\n|','           ','|','    ','|','           ','|','    ','|','           ','|',
+    '\n|','     {}    '.format(suit3),'|','    ','|','     {}    '.format(suit4),'|'
+             ,'    ','|','     {}    '.format(suit5),'|',
+    '\n|','           ','|','    ','|','           ','|','    ','|','           ','|',
+    '\n|','        {} '.format(rank3),'|','    ','|','        {} '.format(rank4),'|'
+             ,'    ','|','        {} '.format(rank5),'|',
+    '\n-------------','    ','-------------','    ','-------------']
+    #print(''.join(hand3))
+
+
+    #print('\n')
+    #print('\n')
+
+
+    suit6 = deck[5][2:5]
+    rank6 = deck[5][:2]
+    hand4 = ['-------------','    ','-------------','    ','-------------','    ','-------------',
+    '\n|',' {}        '.format(rank3),'|','    ','|',' {}        '.format(rank4),'|','    ','|',
+             ' {}        '.format(rank5),'|','    ','|',' {}        '.format(rank6),'|',
+    '\n|','           ','|','    ','|','           ','|','    ','|','           ',
+             '|','    ','|','           ','|',
+    '\n|','     {}    '.format(suit3),'|','    ','|','     {}    '.format(suit4),'|','    ','|',
+             '     {}    '.format(suit5),'|','    ','|','     {}    '.format(suit6),'|',
+    '\n|','           ','|','    ','|','           ','|','    ','|','           ',
+             '|','    ','|','           ','|',
+    '\n|','        {} '.format(rank3),'|','    ','|','        {} '.format(rank4),'|','    ','|',
+             '        {} '.format(rank5),'|','    ','|','        {} '.format(rank6),'|',
+    '\n-------------','    ','-------------','    ','-------------','    ','-------------']
+    #print(''.join(hand4))
+
+
+    #print('\n')
+    #print('\n')
+
+
+    suit7 = deck[6][2:5]
+    rank7 = deck[6][:2]
+    hand5 = ['-------------','    ','-------------','    ','-------------','    ',
+             '-------------','    ','-------------',
+    '\n|',' {}        '.format(rank3),'|','    ','|',' {}        '.format(rank4),'|','    ','|',
+             ' {}        '.format(rank5),'|','    ','|',' {}        '.format(rank6),'|',
+             '    ','|',' {}        '.format(rank7),'|',
+    '\n|','           ','|','    ','|','           ','|','    ','|','           ','|','    ',
+             '|','           ','|','    ','|','           ','|',
+    '\n|','     {}    '.format(suit3),'|','    ','|','     {}    '.format(suit4),'|','    ','|',
+             '     {}    '.format(suit5),'|','    ','|','     {}    '.format(suit6),'|',
+             '    ','|','     {}    '.format(suit7),'|',
+    '\n|','           ','|','    ','|','           ','|','    ','|','           ','|','    ',
+             '|','           ','|','    ','|','           ','|',
+    '\n|','        {} '.format(rank3),'|','    ','|','        {} '.format(rank4),'|','    ','|',
+             '        {} '.format(rank5),'|','    ','|','        {} '.format(rank6),'|',
+             '    ','|','        {} '.format(rank7),'|',
+    '\n-------------','    ','-------------','    ','-------------','    ',
+             '-------------','    ','-------------']
+    #print(''.join(hand5))
+
+
+
+
+    suit8 = deck[7][2:5]
+    rank8 = deck[7][:2]
+    hand6 = ['-------------','    ','-------------','    ','-------------','    ',
+             '-------------','    ','-------------','    ','-------------',
+    '\n|',' {}        '.format(rank3),'|','    ','|',' {}        '.format(rank4),'|','    ',
+             '|',' {}        '.format(rank5),'|','    ','|',' {}        '.format(rank6),'|',
+             '    ','|',' {}        '.format(rank7),'|','    ','|',' {}        '.format(rank8),'|',
+    '\n|','           ','|','    ','|','           ','|','    ','|','           ','|','    ','|',
+             '           ','|','    ','|','           ','|','    ','|','           ','|',
+    '\n|','     {}    '.format(suit3),'|','    ','|','     {}    '.format(suit4),'|','    ','|',
+             '     {}    '.format(suit5),'|','    ','|','     {}    '.format(suit6),'|','    ','|',
+             '     {}    '.format(suit7),'|','    ','|','     {}    '.format(suit8),'|',
+    '\n|','           ','|','    ','|','           ','|','    ','|','           ','|','    ','|',
+             '           ','|','    ','|','           ','|','    ','|','           ','|',
+    '\n|','        {} '.format(rank3),'|','    ','|','        {} '.format(rank4),'|','    ','|',
+             '        {} '.format(rank5),'|','    ','|','        {} '.format(rank6),'|','    ','|',
+             '        {} '.format(rank7),'|','    ','|','        {} '.format(rank8),'|',
+    '\n-------------','    ','-------------','    ','-------------','    ','-------------',
+             '    ','-------------','    ','-------------']
+    #print(''.join(hand6))
+
+
+    #print('\n')
+    #print('\n')
+
+
+    suit9 = deck[8][2:5]
+    rank9 = deck[8][:2]
+    hand7 = ['-------------','    ','-------------','    ','-------------','    ','-------------',
+             '    ','-------------','    ','-------------',
+    '\n|',' {}        '.format(rank3),'|','    ','|',' {}        '.format(rank4),'|','    ','|',
+             ' {}        '.format(rank5),'|','    ','|',' {}        '.format(rank6),'|','    ','|',
+             ' {}        '.format(rank7),'|','    ','|',' {}        '.format(rank8),'|',
+    '\n|','           ','|','    ','|','           ','|','    ','|','           ','|','    ','|',
+             '           ','|','    ','|','           ','|','    ','|','           ','|',
+    '\n|','     {}    '.format(suit3),'|','    ','|','     {}    '.format(suit4),'|','    ','|',
+             '     {}    '.format(suit5),'|','    ','|','     {}    '.format(suit6),'|','    ','|',
+             '     {}    '.format(suit7),'|','    ','|','     {}    '.format(suit8),'|',
+    '\n|','           ','|','    ','|','           ','|','    ','|','           ','|','    ','|',
+             '           ','|','    ','|','           ','|','    ','|','           ','|',
+    '\n|','        {} '.format(rank3),'|','    ','|','        {} '.format(rank4),'|','    ','|',
+             '        {} '.format(rank5),'|','    ','|','        {} '.format(rank6),'|','    ','|',
+             '        {} '.format(rank7),'|','    ','|','        {} '.format(rank8),'|',
+    '\n-------------','    ','-------------','    ','-------------','    ','-------------','    ',
+             '-------------','    ','-------------',
+             '\n','-------------',
+             '\n','|',' {}        '.format(rank9),'|',
+            '\n','|',
+             '           ','|','\n','|',
+             '     {}    '.format(suit9),'|','\n','|',
+             '           ','|','\n','|',
+             '        {} '.format(rank9),'|','\n','-------------',]
+    #print(''.join(hand7))
+
+
+    #print('\n')
+    #print('\n')
+
+
+    suit10 = deck[9][2:5]
+    rank10 = deck[9][:2]
+    hand8 = ['-------------','    ','-------------','    ','-------------','    ','-------------',
+             '    ','-------------','    ','-------------',
+    '\n|',' {}        '.format(rank3),'|','    ','|',' {}        '.format(rank4),'|','    ','|',
+             ' {}        '.format(rank5),'|','    ','|',' {}        '.format(rank6),'|','    ','|',
+             ' {}        '.format(rank7),'|','    ','|',' {}        '.format(rank8),'|',
+    '\n|','           ','|','    ','|','           ','|','    ','|','           ','|','    ','|',
+             '           ','|','    ','|','           ','|','    ','|','           ','|',
+    '\n|','     {}    '.format(suit3),'|','    ','|','     {}    '.format(suit4),'|','    ','|',
+             '     {}    '.format(suit5),'|','    ','|','     {}    '.format(suit6),'|','    ','|',
+             '     {}    '.format(suit7),'|','    ','|','     {}    '.format(suit8),'|',
+    '\n|','           ','|','    ','|','           ','|','    ','|','           ','|','    ','|',
+             '           ','|','    ','|','           ','|','    ','|','           ','|',
+    '\n|','        {} '.format(rank3),'|','    ','|','        {} '.format(rank4),'|','    ','|',
+             '        {} '.format(rank5),'|','    ','|','        {} '.format(rank6),'|','    ','|',
+             '        {} '.format(rank7),'|','    ','|','        {} '.format(rank8),'|',
+    '\n-------------','    ','-------------','    ','-------------','    ','-------------','    ',
+             '-------------','    ','-------------',
+             '\n','-------------','    ','-------------','\n','|',
+             ' {}        '.format(rank9),'|','    ','|',' {}        '.format(rank10),'|',
+             '\n','|',
+             '           ','|','    ','|','           ','|','\n','|',
+             '     {}    '.format(suit9),'|','    ','|','     {}    '.format(suit10),'|',
+             '\n','|',
+             '           ','|','    ','|','           ','|',
+             '\n','|',
+             '        {} '.format(rank9),'|','    ','|','        {} '.format(rank10),'|',
+             '\n','-------------','    ','-------------']
+    #print(''.join(hand8))
+
+
+    #print('\n')
+    #print('\n')
+
+
+    suit11 = deck[10][2:5]
+    rank11 = deck[10][:2]
+    hand9 = ['-------------','    ','-------------','    ','-------------','    ','-------------',
+             '    ','-------------','    ','-------------',
+    '\n|',' {}        '.format(rank3),'|','    ','|',' {}        '.format(rank4),'|','    ','|',
+             ' {}        '.format(rank5),'|','    ','|',' {}        '.format(rank6),'|','    ','|',
+             ' {}        '.format(rank7),'|','    ','|',' {}        '.format(rank8),'|',
+    '\n|','           ','|','    ','|','           ','|','    ','|','           ','|','    ','|',
+             '           ','|','    ','|','           ','|','    ','|','           ','|',
+    '\n|','     {}    '.format(suit3),'|','    ','|','     {}    '.format(suit4),'|','    ','|',
+             '     {}    '.format(suit5),'|','    ','|','     {}    '.format(suit6),'|','    ','|',
+             '     {}    '.format(suit7),'|','    ','|','     {}    '.format(suit8),'|',
+    '\n|','           ','|','    ','|','           ','|','    ','|','           ','|','    ','|',
+             '           ','|','    ','|','           ','|','    ','|','           ','|',
+    '\n|','        {} '.format(rank3),'|','    ','|','        {} '.format(rank4),'|','    ','|',
+             '        {} '.format(rank5),'|','    ','|','        {} '.format(rank6),'|','    ','|',
+             '        {} '.format(rank7),'|','    ','|','        {} '.format(rank8),'|',
+    '\n-------------','    ','-------------','    ','-------------','    ','-------------','    ',
+             '-------------','    ','-------------',
+             '\n','-------------','    ','-------------','    ','-------------',
+             '\n','|',' {}        '.format(rank9),'|','    ','|',' {}        '.format(rank10),'|',
+             '    ','|',' {}        '.format(rank11),'|',
+             '\n','|','           ','|','    ','|','           ','|','    ','|','           ','|',
+             '\n','|','     {}    '.format(suit9),'|','    ','|','     {}    '.format(suit10),'|',
+             '    ','|','     {}    '.format(suit11),'|',
+             '\n','|','           ','|','    ','|','           ','|','    ','|','           ','|',
+             '\n','|','        {} '.format(rank9),'|','    ','|','        {} '.format(rank10),'|',
+             '    ','|','        {} '.format(rank11),'|',
+             '\n','-------------','    ','-------------','    ','-------------']
+    #print(''.join(hand9))
+
+
+
+    #print('\n')
+    #print('\n')
+
+
+    suit12 = deck[11][2:5]
+    rank12 = deck[11][:2]
+    hand10 = ['-------------','    ','-------------','    ','-------------','    ','-------------',
+              '    ','-------------','    ','-------------',
+    '\n|',' {}        '.format(rank3),'|','    ','|',' {}        '.format(rank4),'|','    ','|',
+              ' {}        '.format(rank5),'|','    ','|',' {}        '.format(rank6),'|','    ','|',
+              ' {}        '.format(rank7),'|','    ','|',' {}        '.format(rank8),'|',
+    '\n|','           ','|','    ','|','           ','|','    ','|','           ','|','    ','|',
+              '           ','|','    ','|','           ','|','    ','|','           ','|',
+    '\n|','     {}    '.format(suit3),'|','    ','|','     {}    '.format(suit4),'|','    ','|',
+              '     {}    '.format(suit5),'|','    ','|','     {}    '.format(suit6),'|','    ','|',
+              '     {}    '.format(suit7),'|','    ','|','     {}    '.format(suit8),'|',
+    '\n|','           ','|','    ','|','           ','|','    ','|','           ','|','    ','|',
+              '           ','|','    ','|','           ','|','    ','|','           ','|',
+    '\n|','        {} '.format(rank3),'|','    ','|','        {} '.format(rank4),'|','    ','|',
+              '        {} '.format(rank5),'|','    ','|','        {} '.format(rank6),'|','    ','|',
+              '        {} '.format(rank7),'|','    ','|','        {} '.format(rank8),'|',
+    '\n-------------','    ','-------------','    ','-------------','    ','-------------','    ',
+              '-------------','    ','-------------',
+              '\n','-------------','    ','-------------','    ','-------------','    ','-------------',
+              '\n','|',' {}        '.format(rank9),'|','    ','|',' {}        '.format(rank10),'|',
+              '    ','|',' {}        '.format(rank11),'|','    ','|',' {}        '.format(rank12),'|',
+              '\n','|','           ','|','    ','|','           ','|','    ','|','           ','|',
+              '    ','|','           ','|',
+              '\n','|','     {}    '.format(suit9),'|','    ','|','     {}    '.format(suit10),'|',
+              '    ','|','     {}    '.format(suit11),'|','    ','|','     {}    '.format(suit12),'|',
+              '\n','|','           ','|','    ','|','           ','|','    ','|','           ','|',
+              '    ','|','           ','|',
+              '\n','|','        {} '.format(rank9),'|','    ','|','        {} '.format(rank10),'|',
+              '    ','|','        {} '.format(rank11),'|','    ','|','        {} '.format(rank12),'|',
+              '\n','-------------','    ','-------------','    ','-------------','    ','-------------']
+    #print(''.join(hand10))
+
+
+    #print('\n')
+    #print('\n')
+
+
+    suit13 = deck[12][2:5]
+    rank13 = deck[12][:2]
+    hand11 = ['-------------','    ','-------------','    ','-------------','    ','-------------',
+              '    ','-------------','    ','-------------',
+    '\n|',' {}        '.format(rank3),'|','    ','|',' {}        '.format(rank4),'|','    ','|',
+              ' {}        '.format(rank5),'|','    ','|',' {}        '.format(rank6),'|','    ','|',
+              ' {}        '.format(rank7),'|','    ','|',' {}        '.format(rank8),'|',
+    '\n|','           ','|','    ','|','           ','|','    ','|','           ','|','    ','|',
+              '           ','|','    ','|','           ','|','    ','|','           ','|',
+    '\n|','     {}    '.format(suit3),'|','    ','|','     {}    '.format(suit4),'|','    ','|',
+              '     {}    '.format(suit5),'|','    ','|','     {}    '.format(suit6),'|','    ','|',
+              '     {}    '.format(suit7),'|','    ','|','     {}    '.format(suit8),'|',
+    '\n|','           ','|','    ','|','           ','|','    ','|','           ','|','    ','|',
+              '           ','|','    ','|','           ','|','    ','|','           ','|',
+    '\n|','        {} '.format(rank3),'|','    ','|','        {} '.format(rank4),'|','    ','|',
+              '        {} '.format(rank5),'|','    ','|','        {} '.format(rank6),'|','    ','|',
+              '        {} '.format(rank7),'|','    ','|','        {} '.format(rank8),'|',
+    '\n-------------','    ','-------------','    ','-------------','    ','-------------','    ',
+              '-------------','    ','-------------',
+              '\n','-------------','    ','-------------','    ','-------------','    ','-------------',
+              '    ','-------------',
+              '\n','|',' {}        '.format(rank9),'|','    ','|',' {}        '.format(rank10),'|',
+              '    ','|',' {}        '.format(rank11),'|','    ','|',' {}        '.format(rank12),'|',
+              '    ','|',' {}        '.format(rank13),'|',
+              '\n','|','           ','|','    ','|','           ','|','    ','|','           ','|',
+              '    ','|','           ','|','    ','|','           ','|',
+              '\n','|','     {}    '.format(suit9),'|','    ','|','     {}    '.format(suit10),'|',
+              '    ','|','     {}    '.format(suit11),'|','    ','|','     {}    '.format(suit12),'|',
+              '    ','|','     {}    '.format(suit13),'|',
+              '\n','|','           ','|','    ','|','           ','|','    ','|','           ','|',
+              '    ','|','           ','|','    ','|','           ','|',
+              '\n','|','        {} '.format(rank9),'|','    ','|','        {} '.format(rank10),'|',
+              '    ','|','        {} '.format(rank11),'|','    ','|','        {} '.format(rank12),'|',
+              '    ','|','        {} '.format(rank13),'|',
+              '\n','-------------','    ','-------------','    ','-------------','    ','-------------',
+              '    ','-------------']
+    #print(''.join(hand11))
+
+    # ask for wager amount    
+    while True:
+
+        try:
+            wager_amount = int(input("How much would you like to wager?\n\nPlease enter a dollar amount in integers: "))
+        except ValueError:
+            print('\n' * 40)
+            print('That value is invalid! Please enter an integer\n\n')
+            continue
+        else:
+            human_player.wager = wager_amount
+            print('\n' * 40)
+            break
+
+
+
+
+    # show starting hand
+    print("\nDealer's hand:")
+    print(''.join(dealer_hand))
+    print('\n'*5)
+    print('\nPlayer: '+human_player.name+'\t\tMoney in hand: $',human_player.in_hand,'\t\tWager: $',human_player.wager)
+    print("\nPlayer's hand:")
+    print(''.join(hand2))
+
+    # player's turn goes while True
+    player_turn = True
+
+
+    # checks if player or dealer has busted
+    player_bust = False
+    dealer_bust = False
+
+    # checks if player has an ace
+    ace_player = False
+
+    # set tally for value of cards in hand
+    player_tally = 0
+    
+    # determine the player tally
+    try:
+        player_tally += int(deck[2][:2])
+    except ValueError:
+        if deck[2][:2] == 'A ':
+            player_tally += 11
+            ace_player = True
+        if deck[2][:2] == 'J ' or deck[2][:2] == 'Q ' or deck[2][:2] == 'K ':
+            player_tally += 10
+    try:
+        player_tally += int(deck[3][:2])
+    except ValueError:
+        if deck[3][:2] == 'A ':
+            player_tally += 11
+            ace_player = True
+        if deck[3][:2] == 'J ' or deck[3][:2] == 'Q ' or deck[3][:2] == 'K ':
+            player_tally += 10
+
+    print('Tally: ',player_tally)
+    print('\n')
+
+    # if player has 21
+    if player_tally == 21:
+        print('You have BLACK JACK!')
+        player_turn = False
+        time.sleep(time_elapse)
+        print('\n' * 10)
+        print("\t\t\tComputer's turn!")
+        print('\n'*5)
+        time.sleep(time_elapse)
+
+
+
+    tally_check = 3
+
+    ################
+    # player's turn
+    ################
+    while player_turn == True and player_bust == False:
+        
+        # reset ace_player variable
+        ace_player == False
+        
+        # check if player has max number of cards in hand
+        if no_cards == 11:
+            print('\n'*10)
+            print("You have reached the maximum number of cards allowed in hand.\nIt is now the dealer's turn.")
+            break
+            
+        # start while loop for 3 or more cards in hand
+        while no_cards > 2:
+            # determine the player tally
+            tally_check += 1
+            try:
+                player_tally += int(deck[tally_check][:2])
+            except ValueError:
+                if deck[tally_check][:2] == 'A ':
+                    player_tally += 11
+                    ace_player = True
+                elif deck[tally_check][:2] == 'J ' or deck[tally_check][:2] == 'Q ' or deck[tally_check][:2] == 'K ':
+                    player_tally += 10
+            print('Tally: ',player_tally)
+            print('\n')
+
+            # if equal to 21
+            if player_tally == 21:
+                print('You have 21!')
+                player_turn = False
+
+            # if greater than 21
+            elif player_tally > 21:
+                if ace_player == True:
+                    #print('You have an ace!')
+                    player_tally -= 10
+                    print(player_tally)
+                    ace_used = True
+                    if player_tally > 21:
+                        #print('\n')
+                        #print('Even after the ace you still have over 21')
+                        player_turn = False
+                        player_bust = True
+                else:
+                    #print('\n')
+                    #print('You do not have an ace and you busted')
+                    player_turn = False
+                    player_bust = True
+
+            break
+        
+        restart_game = False
+        
+        # if player busted
+        if player_bust == True:
+            dealer_wins = True
+            print('\n')
+            print('Dealer wins!')
+            human_player.in_hand -= human_player.wager
+            print('Lost $',human_player.wager)
+            print('\nPlayer: '+human_player.name+'\t\tMoney in hand: $',human_player.in_hand)
+            print('\n')
+            
+            # ask if player wants to play again
+            while True:
+                play_again = input("Would you like to play again? Please enter Yes 'y' or No 'n' ")
+                if play_again == 'y'.lower():
+                    # restart dealer and player tallies
+                    dealer_tally = 0
+                    player_tally = 0
+                    # set restart game to True
+                    restart_game = True
+                    print('\n'*40)
+                    break
+                elif play_again == 'n'.lower():
+                    print('\n'*40)
+                    hand_welcome = ['-------------','    ','-------------','    ','-------------','    ','-------------',
+                        '\n|',' A         ','|','    ','|',' A         ','|','    ','|',
+                                 ' A         ','|','    ','|',' A         ','|',
+                        '\n|','           ','|','    ','|','           ','|','    ','|','           ',
+                                 '|','    ','|','           ','|',
+                        '\n|','     {}    '.format(club),'|','    ','|','     {}    '.format(spade),'|','    ','|',
+                                 '     {}    '.format(heart),'|','    ','|','     {}    '.format(diamond),'|',
+                        '\n|','           ','|','    ','|','           ','|','    ','|','           ',
+                                 '|','    ','|','           ','|',
+                        '\n|','        A  ','|','    ','|','        A  ','|','    ','|',
+                                 '        A  ','|','    ','|','        A  ','|',
+                        '\n-------------','    ','-------------','    ','-------------','    ','-------------']
+                    print(''.join(hand_welcome))
+                    print('\n\n')
+                    print('Leaving the table with: $',human_player.in_hand)
+                    print('\n\n\n')
+                    print('\t\tThank you for playing!\n\n\n\n')
+                    game_running = False
+                    break
+                else:
+                    print("You have entered an invalid input.\n\n")
+                    print('\n')
+                    continue
+        if restart_game == True or game_running == False:
+            break
+    
+        # ask if player wants to hit or stand
+        next_move = input("Would you like to hit 'H' or stand 'S'?")
+        print('\n' * 40)
+
+        # if player chooses to hit
+        if next_move == 'h'.lower():
+            no_cards += 1
+
+
+
+            if no_cards == 3:
+                print("\nDealer's hand:")
+                print(''.join(dealer_hand))
+                print('\n'*5)
+                print('\nPlayer: '+human_player.name+'\t\tMoney in hand: $',human_player.in_hand,'\t\tWager: $',human_player.wager)
+                print("\nPlayer's hand:")
+                print(''.join(hand3))
+                continue
+            elif no_cards == 4:
+                print("\nDealer's hand:")
+                print(''.join(dealer_hand))
+                print('\n'*5)
+                print('\nPlayer: '+human_player.name+'\t\tMoney in hand: $',human_player.in_hand,'\t\tWager: $',human_player.wager)
+                print("\nPlayer's hand:")
+                print(''.join(hand4))
+                continue
+            elif no_cards == 5:
+                print("\nDealer's hand:")
+                print(''.join(dealer_hand))
+                print('\n'*5)
+                print('\nPlayer: '+human_player.name+'\t\tMoney in hand: $',human_player.in_hand,'\t\tWager: $',human_player.wager)
+                print("\nPlayer's hand:")
+                print(''.join(hand5))
+                continue
+            elif no_cards == 6:
+                print("\nDealer's hand:")
+                print(''.join(dealer_hand))
+                print('\n'*5)
+                print('\nPlayer: '+human_player.name+'\t\tMoney in hand: $',human_player.in_hand,'\t\tWager: $',human_player.wager)
+                print("\nPlayer's hand:")
+                print(''.join(hand6))
+                continue
+            elif no_cards == 7:
+                print("\nDealer's hand:")
+                print(''.join(dealer_hand))
+                print('\n'*5)
+                print('\nPlayer: '+human_player.name+'\t\tMoney in hand: $',human_player.in_hand,'\t\tWager: $',human_player.wager)
+                print("\nPlayer's hand:")
+                print(''.join(hand7))
+                continue
+            elif no_cards == 8:
+                print("\nDealer's hand:")
+                print(''.join(dealer_hand))
+                print('\n'*5)
+                print('\nPlayer: '+human_player.name+'\t\tMoney in hand: $',human_player.in_hand,'\t\tWager: $',human_player.wager)
+                print("\nPlayer's hand:")
+                print(''.join(hand8))
+                continue
+            elif no_cards == 9:
+                print("\nDealer's hand:")
+                print(''.join(dealer_hand))
+                print('\n'*5)
+                print('\nPlayer: '+human_player.name+'\t\tMoney in hand: $',human_player.in_hand,'\t\tWager: $',human_player.wager)
+                print("\nPlayer's hand:")
+                print(''.join(hand9))
+                continue
+            elif no_cards == 10:
+                print("\nDealer's hand:")
+                print(''.join(dealer_hand))
+                print('\n'*5)
+                print('\nPlayer: '+human_player.name+'\t\tMoney in hand: $',human_player.in_hand,'\t\tWager: $',human_player.wager)
+                print("\nPlayer's hand:")
+                print(''.join(hand10))
+                continue
+            elif no_cards == 11:
+                print("\nDealer's hand:")
+                print(''.join(dealer_hand))
+                print('\n'*5)
+                print('\nPlayer: '+human_player.name+'\t\tMoney in hand: $',human_player.in_hand,'\t\tWager: $',human_player.wager)
+                print("\nPlayer's hand:")
+                print(''.join(hand11))
+                continue
+
+        # if player chooses to stand
+        elif next_move == 's'.lower():
+            print('\n' * 10)
+            print("\t\t\t\t\tComputer's turn!")
+            print('\n'*10)
+            time.sleep(time_elapse)
+            player_turn = False
+    
+    if restart_game == True:
+        # reset number of cards starting in hand
+        no_cards = 2
+        # reset tally_check to 3
+        tally_check = 3
+        continue
+    
+    # if player chooses not to play again
+    if game_running == False:
+        break
+        
+    # winning conditions
+    player_wins = False
+    dealer_wins = False
+    tie_game = False
+
+
+    # checks if player busted
+    if player_bust == True:
+        dealer_wins = True
+
+
+
+    # determine which hand player currently has
+    if no_cards == 2:
+        final_hand = hand2
+    elif no_cards == 3:
+        final_hand = hand3
+    elif no_cards == 4:
+        final_hand = hand4
+    elif no_cards == 5:
+        final_hand = hand5
+    elif no_cards == 6:
+        final_hand = hand6
+    elif no_cards == 7:
+        final_hand = hand7
+    elif no_cards == 8:
+        final_hand = hand8
+    elif no_cards == 9:
+        final_hand = hand9
+    elif no_cards == 10:
+        final_hand = hand10
+    elif no_cards == 11:
+        final_hand = hand11
+
+        
+    
+    ##################
+    # now dealer goes
+    ##################
+    print("\nDealer's hand:")
+    print(''.join(dealer_hand))
+    print('\n'*5)
+    print('\nPlayer: '+human_player.name+'\t\tMoney in hand: $',human_player.in_hand,'\t\tWager: $',human_player.wager)
+    print("\nPlayer's hand:")
+    print(''.join(final_hand))
+    time.sleep(time_elapse)
+
+    print('\n'*40)
+
+    # flip over second card
+    print("\nDealer's hand:")
+    print(''.join(dealer_hand_revealed))
+    print('\n'*5)
+    print('\nPlayer: '+human_player.name+'\t\tMoney in hand: $',human_player.in_hand,'\t\tWager: $',human_player.wager)
+    print("\nPlayer's hand:")
+    print(''.join(final_hand))
+    
+    
+
+
+    # check if dealer has 16 or less in hand
+    dealer_tally = 0
+
+    # check if dealer has an ace
+    ace_dealer = False
+
+    try:
+        dealer_tally += int(deck[0][:2])
+    except ValueError:
+        if deck[0][:2] == 'A ':
+            dealer_tally += 11
+            ace_dealer = True
+        elif deck[0][:2] == 'J ' or deck[0][:2] == 'Q ' or deck[0][:2] == 'K ':
+            dealer_tally += 10
+    try:
+        dealer_tally += int(deck[1][:2])
+    except ValueError:
+        if deck[1][:2] == 'A ' and ace_dealer == False:
+            dealer_tally += 11
+            ace_dealer = True
+        elif deck[1][:2] == 'A ' and ace_dealer == True:
+            dealer_tally += 1
+        elif deck[1][:2] == 'J ' or deck[1][:2] == 'Q ' or deck[1][:2] == 'K ':
+            dealer_tally += 10
+    #print('Dealer tally: ',dealer_tally)
+    #print('\n')
+    time.sleep(time_elapse)
+
+    dealer_hit = False
+
+    # if dealer has less than 17, hit
+    if dealer_tally < 17:
+        dealer_hit = True
+
+    dealer_cards = 2
+    counter = 1
+
+    # dealer keeps hitting until 17 or higher in hand
+    while dealer_hit == True:
+        # reset ace dealer variable
+        ace_dealer = False
+        
+        print('The dealer shall hit!')
+        print('\n')
+        dealer_cards += 1
+        time.sleep(time_elapse)
+        print('\n'*40)
+
+        # show dealer's current hand
+        print("\nDealer's hand:")
+        if dealer_cards == 3:
+            print(''.join(dealer_hand3))
+        elif dealer_cards == 4:
+            print(''.join(dealer_hand4))
+        elif dealer_cards == 5:
+            print(''.join(dealer_hand5))
+        elif dealer_cards == 6:
+            print(''.join(dealer_hand6))
+        elif dealer_cards == 7:
+            print(''.join(dealer_hand7))
+        print('\n'*5)
+        print('\nPlayer: '+human_player.name+'\t\tMoney in hand: $',human_player.in_hand,'\t\tWager: $',human_player.wager)
+        print("\nPlayer's hand:")
+        print(''.join(final_hand))
+
+        # add up dealer's new tally
+        counter += 1
+        try:
+            dealer_tally += int(deck[no_cards+counter][:2])
+        except ValueError:
+            if deck[no_cards+counter][:2] == 'A ' and ace_dealer == False:
+                dealer_tally += 11
+                ace_dealer = True
+            elif deck[no_cards+counter][:2] == 'A ' and ace_dealer == True:
+                dealer_tally += 1
+            elif deck[no_cards+counter][:2] == 'J ' or deck[no_cards+counter][:2] == 'Q ' or deck[no_cards+counter][:2] == 'K ':
+                dealer_tally += 10
+        #print('Dealer tally: ',dealer_tally)
+
+        # if dealer tally greater than 21
+        if dealer_tally > 21:
+            if ace_dealer == True:
+                #print('Dealer has an ace!')
+                #print('\n')
+                dealer_tally -= 10
+                if dealer_tally > 21:
+                    #print('Even after the ace the dealer still has over 21')
+                    #print('\n')
+                    dealer_hit = False
+                    dealer_bust = True
+
+            elif ace_dealer == False:
+                #print('The dealer does not have an ace and they busted')
+                #print('\n')
+                dealer_hit = False
+                dealer_bust = True
+        elif dealer_tally < 17:
+            #print('Dealer still has less than 17, will hit again.')
+            #print('\n')
+            continue
+        else:
+            #print('Dealer has 17 or more and has not busted. End of dealer turn.')
+            #print('\n')
+            dealer_hit = False
+
+    print('FINAL HANDS:      Dealer: ',dealer_tally,'Player: ',player_tally)
+    print('\n')
+
+    # if player wins by having higher tally
+    if player_tally > dealer_tally and player_bust == False:
+        player_wins = True
+        print('Player wins!')
+        human_player.in_hand += human_player.wager
+        print('Won $',human_player.wager)
+        print('\nPlayer: '+human_player.name+'\t\tMoney in hand: $',human_player.in_hand)
+    # if player wins because dealer busted 
+    elif dealer_bust == True:
+        player_wins = True
+        print('Player wins!')
+        human_player.in_hand += human_player.wager
+        print('Won $',human_player.wager)
+        print('\nPlayer: '+human_player.name+'\t\tMoney in hand: $',human_player.in_hand)
+    # if dealer wins    
+    elif dealer_tally > player_tally and dealer_bust == False:
+        dealer_wins = True
+        print('Dealer wins!')
+        human_player.in_hand -= human_player.wager
+        print('Lost $',human_player.wager)
+        print('\nPlayer: '+human_player.name+'\t\tMoney in hand: $',human_player.in_hand)
+    # if tie    
+    elif player_tally == dealer_tally:
+        tie_game = True
+        print('Push! Player and dealer have tied.')
+        print('\nPlayer: '+human_player.name+'\t\tMoney in hand: $',human_player.in_hand)
+    
+    # ask if player wants to play again
+    while True:
+        print('\n')
+        play_again = input("Would you like to play again? Please enter Yes 'y' or No 'n' ")
+        if play_again == 'y'.lower():
+            dealer_tally = 0
+            player_tally = 0
+            print('\n'*40)
+            break
+        elif play_again == 'n'.lower():
+            print('\n'*40)
+            hand_welcome = ['-------------','    ','-------------','    ','-------------','    ','-------------',
+                '\n|',' A         ','|','    ','|',' A         ','|','    ','|',
+                         ' A         ','|','    ','|',' A         ','|',
+                '\n|','           ','|','    ','|','           ','|','    ','|','           ',
+                         '|','    ','|','           ','|',
+                '\n|','     {}    '.format(club),'|','    ','|','     {}    '.format(spade),'|','    ','|',
+                         '     {}    '.format(heart),'|','    ','|','     {}    '.format(diamond),'|',
+                '\n|','           ','|','    ','|','           ','|','    ','|','           ',
+                         '|','    ','|','           ','|',
+                '\n|','        A  ','|','    ','|','        A  ','|','    ','|',
+                         '        A  ','|','    ','|','        A  ','|',
+                '\n-------------','    ','-------------','    ','-------------','    ','-------------']
+            print(''.join(hand_welcome))
+            print('\n\n')
+            print('Leaving the table with: $',human_player.in_hand)
+            print('\n\n\n')
+            print('\t\tThank you for playing!\n\n\n\n')
+            game_running = False
+            break
+        else:
+            print("You have entered an invalid input.\n\n")
+            continue
