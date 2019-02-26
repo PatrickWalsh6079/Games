@@ -1057,6 +1057,8 @@ while game_running == True:
             #print('Dealer has 17 or more and has not busted. End of dealer turn.')
             #print('\n')
             dealer_hit = False
+        if dealer_tally < 17:
+            continue
 
     print('FINAL HANDS:      Dealer: ',dealer_tally,'Player: ',player_tally)
     print('\n')
