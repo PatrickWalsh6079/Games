@@ -30,7 +30,13 @@ play until the dealer busts.
 
 
 
+# to play music
+import winsound, time
+# random module for shuffling deck
+import random
 
+# start music
+winsound.PlaySound(r'C:/Users/pwalsh/Desktop/Training/Python/Programs/blackjack.wav', winsound.SND_LOOP + winsound.SND_ASYNC)
 
 #########
 # suits
@@ -55,14 +61,6 @@ deck = ['A '+club,'2 '+club,'3 '+club,'4 '+club,'5 '+club,'6 '+club,'7 '+club,'8
         '9 '+heart,'10'+heart,'J '+heart,'Q '+heart,'K '+heart,
         'A '+diamond,'2 '+diamond,'3 '+diamond,'4 '+diamond,'5 '+diamond,'6 '+diamond,'7 '+diamond,
         '8 '+diamond,'9 '+diamond,'10'+diamond,'J '+diamond,'Q '+diamond,'K '+diamond]
-
-
-
-
-# random module for shuffling deck
-import random
-
-
 
 
 
@@ -178,6 +176,7 @@ time_elapse = random.randint(2,4)
 game_running = True
 
 while game_running == True:
+    
     
     # shuffle the deck
     random.shuffle(deck)
@@ -671,10 +670,11 @@ while game_running == True:
         print('You have BLACK JACK!')
         player_turn = False
         time.sleep(time_elapse)
-        print('\n' * 10)
+        print('\n' * 40)
         print("\t\t\tComputer's turn!")
-        print('\n'*5)
+        print('\n'*10)
         time.sleep(time_elapse)
+        print('\n'*40)
 
 
 
@@ -711,15 +711,21 @@ while game_running == True:
 
             # if equal to 21
             if player_tally == 21:
-                print('You have 21!')
+                print('You have BLACK JACK!')
                 player_turn = False
+                time.sleep(time_elapse)
+                print('\n' * 40)
+                print("\t\t\tComputer's turn!")
+                print('\n'*10)
+                time.sleep(time_elapse)
+                print('\n'*40)
 
             # if greater than 21
             elif player_tally > 21:
                 if ace_player == True:
-                    #print('You have an ace!')
                     player_tally -= 10
-                    print(player_tally)
+                    print('You have an ace!')
+                    print('\nNew tally: ',player_tally)
                     ace_used = True
                     if player_tally > 21:
                         #print('\n')
@@ -782,7 +788,7 @@ while game_running == True:
                     print("You have entered an invalid input.\n\n")
                     print('\n')
                     continue
-        if restart_game == True or game_running == False:
+        if restart_game == True or game_running == False or player_turn == False:
             break
     
         # ask if player wants to hit or stand
